@@ -142,3 +142,13 @@ const secureAuthStorage = new AuthStorage(new TauriKeychainBackend());
 ## Summary
 
 By providing a custom `OAuthLoginCallbacks` implementation using Tauri's native APIs and integrating with `AuthStorage`, your application can offer a fully integrated, GUI-driven authentication experience that eliminates the need for the CLI `/login` command.
+
+## High-Level Guide for UI Designers
+
+When designing the authentication flow for a Tauri app integrating `pi-coding-agent`, consider the following UI elements:
+
+1.  **Provider Selection:** A screen or dropdown to select the AI provider (e.g., Anthropic, GitHub Copilot).
+2.  **Status Indicator/Message Area:** A persistent text area or toast notification system to display progress messages (`onProgress`) and instructions (`onAuth`, `onDeviceCode`).
+3.  **Device Code Modal:** A dialog that appears when the OAuth Device Flow (`onDeviceCode`) is triggered. It must clearly display the `userCode`, provide a copy-to-clipboard button, and offer a button/link to open the `verificationUri` in the default browser.
+4.  **Prompt Dialog:** A flexible modal (`onPrompt`) that can display a dynamic `message` and includes an input field. The input field must support toggling visibility (password masking) if the `isSecret` flag is true.
+5.  **Loading State:** Visual feedback (spinners, disabled buttons) during the `authStorage.login()` call to indicate network activity.

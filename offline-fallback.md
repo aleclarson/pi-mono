@@ -55,6 +55,13 @@ const FALLBACK_MODEL = "qwen2.5-coder:7b";
 
 export default function (pi: ExtensionAPI) {
   pi.on("before_agent_start", async (_event, ctx) => {
+    const currentModel = ctx.model;
+
+    // Don't check the internet or switch if we are already using a local model
+    if (currentModel?.provider === FALLBACK_PROVIDER) {
+      return;
+    }
+
     try {
       // Fast check: fetch a known reliable endpoint with a short timeout
       const controller = new AbortController();
@@ -69,13 +76,6 @@ export default function (pi: ExtensionAPI) {
       // Internet is up; do nothing and continue with the current model
     } catch (error) {
       // Internet appears to be down
-      const currentModel = ctx.model;
-
-      // Don't switch if we are already using a local model
-      if (currentModel?.provider === FALLBACK_PROVIDER) {
-         return;
-      }
-
       const fallback = ctx.modelRegistry.find(FALLBACK_PROVIDER, FALLBACK_MODEL);
       if (fallback) {
         ctx.ui.notify(`Internet unreachable. Falling back to local model: ${fallback.name}`, "warning");
